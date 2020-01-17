@@ -104,3 +104,42 @@ einfachesLevel4 = [
            ]
 
 einfachesLevel = [einfachesLevel1, einfachesLevel2, einfachesLevel3, einfachesLevel4]
+
+
+kiTestLevel1 = [
+            [1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1],
+            [1, 0, 3, 0, 1],
+            [1, 0, 2, 0, 1],
+            [1, 0, 0, 0, 1],
+            [1, 1, 1, 4, 1]
+]
+
+kiTestLevel2 = [
+            [1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1],
+            [1, 0, 3, 0, 1],
+            [1, 0, 2, 0, 1],
+            [1, 0, 0, 0, 4],
+            [1, 1, 1, 1, 1]
+]
+
+kiTestLevel3 = [
+            [1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1],
+            [1, 0, 3, 1, 1],
+            [1, 0, 2, 0, 1],
+            [1, 0, 0, 0, 1],
+            [1, 1, 1, 4, 1]
+]
+
+kiTestLevel4 = [
+            [1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1],
+            [1, 1, 3, 0, 1],
+            [1, 0, 2, 0, 1],
+            [1, 0, 0, 0, 1],
+            [1, 1, 1, 4, 1]
+]
+
+kiTestLevel = [kiTestLevel1, kiTestLevel2, kiTestLevel3, kiTestLevel4]

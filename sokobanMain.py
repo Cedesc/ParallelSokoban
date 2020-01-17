@@ -14,6 +14,14 @@ Erklaerung:
     - 3 entspricht Kiste
 """
 
+class Knoten:
+
+    def __init__(self):
+        self.positionen = (None, None)
+        self.oben = None
+        self.rechts = None
+        self.unten = None
+        self.links = None
 
 
 
@@ -39,8 +47,11 @@ class Window(QWidget):
         self.kistePosition = self.positionenBestimmenKiste()
 
         self.gewonnen = [False, False, False, False]
-        self.gemachteZuege = [copy.deepcopy((self.spielerPosition, self.kistePosition))]
         # self.gemachteZuege enthaelt jede vergangene Position von Spieler und Kiste von jedem Feld
+        self.gemachteZuege = [copy.deepcopy((self.spielerPosition, self.kistePosition))]
+
+        # ein Eintrag besteht aus einer Liste, die self.gemachteZuege entspricht, wuerde man diesen Weg gehen
+        self.moeglicheWegeKI = []
 
 
         self.keyPressEvent = self.fn
@@ -149,127 +160,31 @@ class Window(QWidget):
 
         # nach links bewegen
         if e.key() == Qt.Key_Left:
-            for n in range(4):
-                if not self.gewonnen[n]:
-                    if self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] == 0:
-                        # Positionen aendern
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][1] -= 1
-
-                    elif self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] == 3 and \
-                            self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] in [0,4]:
-
-                        # pruefen ob Abschnitt fertig
-                        if self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] == 4:
-                            self.gewonnen[n] = True
-                            self.pruefenObGewonnen()
-
-                        # Positionen aendern
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] = 3
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
-                        self.kistePosition[n][1] -= 1
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][1] -= 1
-
-            # Zug abspeichern
-            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+            self.nachLinksBewegen()
 
             self.update()
 
         # nach rechts bewegen
         if e.key() == Qt.Key_Right:
-            for n in range(4):
-                if not self.gewonnen[n]:
-                    if self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] == 0:
-                        # Positionen aendern
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][1] += 1
-
-                    elif self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] == 3 and \
-                            self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] in [0,4]:
-
-                        # pruefen ob Abschnitt fertig
-                        if self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] == 4:
-                            self.gewonnen[n] = True
-                            self.pruefenObGewonnen()
-
-                        # Positionen aendern
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] = 3
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
-                        self.kistePosition[n][1] += 1
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][1] += 1
-
-            # Zug abspeichern
-            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+            self.nachRechtsBewegen()
 
             self.update()
 
         # nach oben bewegen
         if e.key() == Qt.Key_Up:
-            for n in range(4):
-                if not self.gewonnen[n]:
-                    if self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] == 0:
-                        # Positionen aendern
-                        self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][0] -= 1
-
-
-                    elif self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] == 3 and \
-                            self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] in [0,4]:
-
-                        # pruefen ob Abschnitt fertig
-                        if self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] == 4:
-                            self.gewonnen[n] = True
-                            self.pruefenObGewonnen()
-
-                        # Positionen aendern
-                        self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] = 3
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
-                        self.kistePosition[n][0] -= 1
-                        self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][0] -= 1
-
-            # Zug abspeichern
-            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+            self.nachObenBewegen()
 
             self.update()
 
         # nach unten bewegen
         if e.key() == Qt.Key_Down:
-            for n in range(4):
-                if not self.gewonnen[n]:
-                    if self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] == 0:
-                        # Positionen aendern
-                        self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][0] += 1
+            self.nachUntenBewegen()
 
-                    elif self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] == 3 and \
-                            self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] in [0,4]:
+            self.update()
 
-                        # pruefen ob Abschnitt fertig
-                        if self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] == 4:
-                            self.gewonnen[n] = True
-                            self.pruefenObGewonnen()
-
-                        # Positionen aendern
-                        self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] = 3
-                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
-                        self.kistePosition[n][0] += 1
-                        self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] = 2
-                        self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
-                        self.spielerPosition[n][0] += 1
-
-            # Zug abspeichern
-            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
-
+        # K druecken um KI zu nutzen:
+        if e.key() == Qt.Key_K:
+            self.kiSchritt()
             self.update()
 
 
@@ -342,7 +257,7 @@ class Window(QWidget):
 
 
     def pruefenObGewonnen(self):
-        """ Ueberpruefen ob (Teil-)Level geschafft ist """
+        """ Ueberpruefen ob gesamtes Level geschafft ist """
         for n in range(4):
             if not self.gewonnen[n]:
                 return False
@@ -379,6 +294,153 @@ class Window(QWidget):
             self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 3
 
         return True
+
+
+    def nachLinksBewegen(self):
+        for n in range(4):
+            if not self.gewonnen[n]:
+                if self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] == 0:
+                    # Positionen aendern
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][1] -= 1
+
+                elif self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] == 3 and \
+                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] in [0, 4]:
+
+                    # pruefen ob Abschnitt fertig
+                    if self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] == 4:
+                        self.gewonnen[n] = True
+                        self.pruefenObGewonnen()
+
+                    # Positionen aendern
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] - 1] = 3
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
+                    self.kistePosition[n][1] -= 1
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] - 1] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][1] -= 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def nachRechtsBewegen(self):
+        for n in range(4):
+            if not self.gewonnen[n]:
+                if self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] == 0:
+                    # Positionen aendern
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][1] += 1
+
+                elif self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] == 3 and \
+                        self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] in [0, 4]:
+
+                    # pruefen ob Abschnitt fertig
+                    if self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] == 4:
+                        self.gewonnen[n] = True
+                        self.pruefenObGewonnen()
+
+                    # Positionen aendern
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1] + 1] = 3
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
+                    self.kistePosition[n][1] += 1
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1] + 1] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][1] += 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def nachObenBewegen(self):
+        for n in range(4):
+            if not self.gewonnen[n]:
+                if self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] == 0:
+                    # Positionen aendern
+                    self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][0] -= 1
+
+
+                elif self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] == 3 and \
+                        self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] in [0, 4]:
+
+                    # pruefen ob Abschnitt fertig
+                    if self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] == 4:
+                        self.gewonnen[n] = True
+                        self.pruefenObGewonnen()
+
+                    # Positionen aendern
+                    self.level[n][self.kistePosition[n][0] - 1][self.kistePosition[n][1]] = 3
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
+                    self.kistePosition[n][0] -= 1
+                    self.level[n][self.spielerPosition[n][0] - 1][self.spielerPosition[n][1]] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][0] -= 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def nachUntenBewegen(self):
+        for n in range(4):
+            if not self.gewonnen[n]:
+                if self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] == 0:
+                    # Positionen aendern
+                    self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][0] += 1
+
+                elif self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] == 3 and \
+                        self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] in [0, 4]:
+
+                    # pruefen ob Abschnitt fertig
+                    if self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] == 4:
+                        self.gewonnen[n] = True
+                        self.pruefenObGewonnen()
+
+                    # Positionen aendern
+                    self.level[n][self.kistePosition[n][0] + 1][self.kistePosition[n][1]] = 3
+                    self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
+                    self.kistePosition[n][0] += 1
+                    self.level[n][self.spielerPosition[n][0] + 1][self.spielerPosition[n][1]] = 2
+                    self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+                    self.spielerPosition[n][0] += 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def kiNachOben(self, m = 0):
+
+        if not self.gewonnen[m]:
+            if self.level[m][self.spielerPosition[m][0] - 1][self.spielerPosition[m][1]] == 0:
+                # Positionen aendern
+                self.spielerPosition[0][0] -= 1
+
+            elif [ self.spielerPosition[m][0] - 1, self.spielerPosition[m][1] ] == self.kistePosition[m] and \
+                    self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] in [0, 4]:
+                print("yes")
+
+                # pruefen ob Abschnitt fertig
+                if self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] == 4:
+                    self.gewonnen[m] = True
+
+                # Positionen aendern
+                self.kistePosition[m][0] -= 1
+                self.spielerPosition[m][0] -= 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def kiSchritt(self):
+        # in jede Richtung ueberpruefen ob Bewegung dorthin schlecht waere
+        self.kiNachOben()
+
+
 
 
 
