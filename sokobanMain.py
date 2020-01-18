@@ -46,6 +46,11 @@ class Window(QWidget):
         self.spielerPosition = self.positionenBestimmenSpieler()
         self.kistePosition = self.positionenBestimmenKiste()
 
+        # 2 und 3 entfernen aus Level
+        for n in range(4):
+            self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+            self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
+
         self.gewonnen = [False, False, False, False]
         # self.gemachteZuege enthaelt jede vergangene Position von Spieler und Kiste von jedem Feld
         self.gemachteZuege = [copy.deepcopy((self.spielerPosition, self.kistePosition))]
@@ -104,7 +109,7 @@ class Window(QWidget):
                                 self.nachUnten + hoehe * verschiebung + raeudigeVerschiebungY)
 
 
-            """ Rechtecke einzeichnen """
+            """ Level zeichnen """
             painter.setPen(QPen(QColor(200, 0, 0), 3, Qt.SolidLine))
             for i in range(self.anzahlZeilen):
 
@@ -117,15 +122,17 @@ class Window(QWidget):
                                          self.levelKoordinaten[i][j][1][1] - self.levelKoordinaten[i][j][0][1], # weite
                                          QColor(0,0,0))
 
-                    if self.level[n][i][j] == 2:
+                    """if self.level[n][i][j] == 2:
                         painter.setPen(QPen(QColor(0, 0, 0), 3, Qt.SolidLine))
                         painter.setBrush(QColor(100, 255, 100))
                         painter.drawEllipse(self.levelKoordinaten[i][j][0][0] + raeudigeVerschiebungX,
                                          self.levelKoordinaten[i][j][0][1] + raeudigeVerschiebungY,
                                          self.levelKoordinaten[i][j][1][0] - self.levelKoordinaten[i][j][0][0],
-                                         self.levelKoordinaten[i][j][1][1] - self.levelKoordinaten[i][j][0][1])
+                                         self.levelKoordinaten[i][j][1][1] - self.levelKoordinaten[i][j][0][1])"""
 
-                    if self.level[n][i][j] == 3:
+
+
+                    """if self.level[n][i][j] == 3:
                         painter.setPen(QPen(QColor(0, 0, 0), 1, Qt.SolidLine))
                         painter.setBrush(QColor(220, 220, 0))
                         painter.drawRect(self.levelKoordinaten[i][j][0][0] + raeudigeVerschiebungX,
@@ -139,8 +146,35 @@ class Window(QWidget):
                         painter.drawLine(self.levelKoordinaten[i][j][0][0] + raeudigeVerschiebungX,
                                          self.levelKoordinaten[i][j][1][1] + raeudigeVerschiebungY,
                                          self.levelKoordinaten[i][j][1][0] + raeudigeVerschiebungX,
-                                         self.levelKoordinaten[i][j][0][1] + raeudigeVerschiebungY)
+                                         self.levelKoordinaten[i][j][0][1] + raeudigeVerschiebungY)"""
 
+            """ Spieler zeichnen """
+            painter.setPen(QPen(QColor(0, 0, 0), 3, Qt.SolidLine))
+            painter.setBrush(QColor(100, 255, 100))
+            xKoordinateSpieler = self.spielerPosition[n][0]
+            yKoordinateSpieler = self.spielerPosition[n][1]
+            painter.drawEllipse(self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][0][0] + raeudigeVerschiebungX,
+                                self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][0][1] + raeudigeVerschiebungY,
+                                self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][1][0] - self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][0][0],
+                                self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][1][1] - self.levelKoordinaten[xKoordinateSpieler][yKoordinateSpieler][0][1])
+
+            """ Kiste zeichnen """
+            painter.setPen(QPen(QColor(0, 0, 0), 1, Qt.SolidLine))
+            painter.setBrush(QColor(220, 220, 0))
+            xKoordinateKiste = self.kistePosition[n][0]
+            yKoordinateKiste = self.kistePosition[n][1]
+            painter.drawRect(self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][0] + raeudigeVerschiebungX,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][1] + raeudigeVerschiebungY,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][0] - self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][0],  # hoehe
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][1] - self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][1])
+            painter.drawLine(self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][0] + raeudigeVerschiebungX,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][1] + raeudigeVerschiebungY,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][0] + raeudigeVerschiebungX,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][1] + raeudigeVerschiebungY)
+            painter.drawLine(self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][0] + raeudigeVerschiebungX,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][1] + raeudigeVerschiebungY,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][1][0] + raeudigeVerschiebungX,
+                             self.levelKoordinaten[xKoordinateKiste][yKoordinateKiste][0][1] + raeudigeVerschiebungY)
 
     def fn(self, e):
 
@@ -182,9 +216,24 @@ class Window(QWidget):
 
             self.update()
 
-        # K druecken um KI zu nutzen:
+        # I nach oben
+        if e.key() == Qt.Key_I:
+            self.kiNachOben()
+            self.update()
+
+        # K nach unten
         if e.key() == Qt.Key_K:
-            self.kiSchritt()
+            self.kiNachUnten()
+            self.update()
+
+        # L nach rechts
+        if e.key() == Qt.Key_L:
+            self.kiNachRechts()
+            self.update()
+
+        # J nach links
+        if e.key() == Qt.Key_J:
+            self.kiNachLinks()
             self.update()
 
 
@@ -286,12 +335,10 @@ class Window(QWidget):
         self.spielerPosition = copy.deepcopy(self.gemachteZuege[-1][0])
         self.kistePosition = copy.deepcopy(self.gemachteZuege[-1][1])
 
-        # neue Positionen im Level eintragen
+        # Gewinn zurueckziehen, wenn Block nicht mehr im Zielfeld
         for n in range(4):
-            self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 2
             if self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] == 4:
                 self.gewonnen[n] = True
-            self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 3
 
         return True
 
@@ -413,16 +460,18 @@ class Window(QWidget):
         self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
 
 
+
+
     def kiNachOben(self, m = 0):
 
         if not self.gewonnen[m]:
-            if self.level[m][self.spielerPosition[m][0] - 1][self.spielerPosition[m][1]] == 0:
+            if self.level[m][self.spielerPosition[m][0] - 1][self.spielerPosition[m][1]] == 0 and \
+                    [self.spielerPosition[m][0] - 1, self.spielerPosition[m][1]] != self.kistePosition[m]:
                 # Positionen aendern
                 self.spielerPosition[0][0] -= 1
 
             elif [ self.spielerPosition[m][0] - 1, self.spielerPosition[m][1] ] == self.kistePosition[m] and \
-                    self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] in [0, 4]:
-                print("yes")
+                    self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] == 0:
 
                 # pruefen ob Abschnitt fertig
                 if self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] == 4:
@@ -431,6 +480,73 @@ class Window(QWidget):
                 # Positionen aendern
                 self.kistePosition[m][0] -= 1
                 self.spielerPosition[m][0] -= 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def kiNachUnten(self, m = 0):
+        if not self.gewonnen[m]:
+            if self.level[m][self.spielerPosition[m][0] + 1][self.spielerPosition[m][1]] == 0 and \
+                    [self.spielerPosition[m][0] + 1, self.spielerPosition[m][1]] != self.kistePosition[m]:
+                # Positionen aendern
+                self.spielerPosition[0][0] += 1
+
+            elif [ self.spielerPosition[m][0] + 1, self.spielerPosition[m][1] ] == self.kistePosition[m] and \
+                    self.level[m][self.kistePosition[m][0] + 1][self.kistePosition[m][1]] in [0, 4]:
+
+                # pruefen ob Abschnitt fertig
+                if self.level[m][self.kistePosition[m][0] + 1][self.kistePosition[m][1]] == 4:
+                    self.gewonnen[m] = True
+
+                # Positionen aendern
+                self.kistePosition[m][0] += 1
+                self.spielerPosition[m][0] += 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+
+
+    def kiNachRechts(self, m = 0):
+        if not self.gewonnen[m]:
+            if self.level[m][self.spielerPosition[m][0]][self.spielerPosition[m][1] + 1] == 0 and \
+                    [self.spielerPosition[m][0], self.spielerPosition[m][1] + 1] != self.kistePosition[m]:
+                # Positionen aendern
+                self.spielerPosition[0][1] += 1
+
+            elif [self.spielerPosition[m][0], self.spielerPosition[m][1] + 1] == self.kistePosition[m] and \
+                    self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] + 1] in [0, 4]:
+
+                # pruefen ob Abschnitt fertig
+                if self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] + 1] == 4:
+                    self.gewonnen[m] = True
+
+                # Positionen aendern
+                self.kistePosition[m][1] += 1
+                self.spielerPosition[m][1] += 1
+
+        # Zug abspeichern
+        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+        
+
+
+    def kiNachLinks(self, m = 0):
+        if not self.gewonnen[m]:
+            if self.level[m][self.spielerPosition[m][0]][self.spielerPosition[m][1] - 1] == 0 and \
+                    [self.spielerPosition[m][0], self.spielerPosition[m][1] - 1] != self.kistePosition[m]:
+                # Positionen aendern
+                self.spielerPosition[0][1] -= 1
+
+            elif [self.spielerPosition[m][0], self.spielerPosition[m][1] - 1] == self.kistePosition[m] and \
+                    self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] - 1] in [0, 4]:
+
+                # pruefen ob Abschnitt fertig
+                if self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] - 1] == 4:
+                    self.gewonnen[m] = True
+
+                # Positionen aendern
+                self.kistePosition[m][1] -= 1
+                self.spielerPosition[m][1] -= 1
 
         # Zug abspeichern
         self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
