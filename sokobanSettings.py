@@ -8,7 +8,7 @@ ANZAHLSPALTEN = 15
 SCHWIERIGKEIT = -1000
 
 
-VORGEFERTIGTESLEVEL = sokobanLevelBib.beispielLevel
+VORGEFERTIGTESLEVEL = sokobanLevelBib.einfachesLevel
 
 LEVEL = VORGEFERTIGTESLEVEL
 
@@ -19,13 +19,13 @@ LEVEL = VORGEFERTIGTESLEVEL
 """
 KI Idee:
 
-    moeglicheWege = [ [ (spielerP, kisteP ] ]
+    moeglicheWege = [ [ (spielerP, kisteP) ] ]
 
     hilfsliste = [ (spielerP, kisteP) ]       # der hilfsliste ein tupel aus spieler und kistenposition hinzufuegen
     
     while True:
         
-        eingefuegt = False           # gibt an ob von diesem Punkt aus mindestens ein naechster Punkt hinzugefuegt wurde
+        # eingefuegt = False           # gibt an ob von diesem Punkt aus mindestens ein naechster Punkt hinzugefuegt wurde
         
         moeglicheWegeKopie = copy.deepcopy(moeglicheWege)
         
@@ -47,7 +47,14 @@ KI Idee:
                         
                     hilfsliste.append( (spielerP, kisteP) )
                         
-                    eingefuegt = True
+                    # eingefuegt = True
+                    
+                    if naechstePosition[1] == zielposition:
+                        
+                        print("geschafft")
+                        
+                        return moeglicheWegeKopie[welcherWeg]
+                    
     
         
         wenn zielpunkt erreicht wurde: aufhoeren und liste, die diesen punkt beinhaltet, ausgeben
