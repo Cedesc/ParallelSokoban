@@ -45,6 +45,7 @@ class Window(QWidget):
         self.levelKoordinaten = self.koordinatenBestimmen()
         self.spielerPosition = self.positionenBestimmenSpieler()
         self.kistePosition = self.positionenBestimmenKiste()
+        self.zielPosition = self.positionBestimmenZiel()
 
         # 2 und 3 entfernen aus Level
         for n in range(4):
@@ -194,27 +195,38 @@ class Window(QWidget):
 
         # nach links bewegen
         if e.key() == Qt.Key_Left:
-            self.nachLinksBewegen()
-
+            for n in range(4):
+                self.kiNachLinks(n)
+            # Zug abspeichern
+            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
             self.update()
 
         # nach rechts bewegen
         if e.key() == Qt.Key_Right:
-            self.nachRechtsBewegen()
-
+            for n in range(4):
+                self.kiNachRechts(n)
+            # Zug abspeichern
+            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
             self.update()
 
         # nach oben bewegen
         if e.key() == Qt.Key_Up:
-            self.nachObenBewegen()
-
+            for n in range(4):
+                self.kiNachOben(n)
+            # Zug abspeichern
+            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
             self.update()
 
         # nach unten bewegen
         if e.key() == Qt.Key_Down:
-            self.nachUntenBewegen()
-
+            for n in range(4):
+                self.kiNachUnten(n)
+            # Zug abspeichern
+            self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
             self.update()
+
+
+
 
         # I nach oben
         if e.key() == Qt.Key_I:
@@ -295,6 +307,21 @@ class Window(QWidget):
                 if fertig:
                     break
         return allePositionenKiste
+
+
+    def positionBestimmenZiel(self):
+        allePositionenZiele = []
+        for n in range(4):
+            fertig = False
+            for i in range(self.anzahlZeilen):
+                for j in range(self.anzahlSpalten):
+                    if self.level[n][i][j] == 4:
+                        allePositionenZiele.append([i, j])
+                        fertig = True
+                        break
+                if fertig:
+                    break
+        return allePositionenZiele
 
 
     def levelReset(self):
@@ -468,10 +495,10 @@ class Window(QWidget):
             if self.level[m][self.spielerPosition[m][0] - 1][self.spielerPosition[m][1]] == 0 and \
                     [self.spielerPosition[m][0] - 1, self.spielerPosition[m][1]] != self.kistePosition[m]:
                 # Positionen aendern
-                self.spielerPosition[0][0] -= 1
+                self.spielerPosition[m][0] -= 1
 
             elif [ self.spielerPosition[m][0] - 1, self.spielerPosition[m][1] ] == self.kistePosition[m] and \
-                    self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] == 0:
+                    self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] in [0,4]:
 
                 # pruefen ob Abschnitt fertig
                 if self.level[m][self.kistePosition[m][0] - 1][self.kistePosition[m][1]] == 4:
@@ -482,7 +509,7 @@ class Window(QWidget):
                 self.spielerPosition[m][0] -= 1
 
         # Zug abspeichern
-        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+        # self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
 
 
     def kiNachUnten(self, m = 0):
@@ -490,7 +517,7 @@ class Window(QWidget):
             if self.level[m][self.spielerPosition[m][0] + 1][self.spielerPosition[m][1]] == 0 and \
                     [self.spielerPosition[m][0] + 1, self.spielerPosition[m][1]] != self.kistePosition[m]:
                 # Positionen aendern
-                self.spielerPosition[0][0] += 1
+                self.spielerPosition[m][0] += 1
 
             elif [ self.spielerPosition[m][0] + 1, self.spielerPosition[m][1] ] == self.kistePosition[m] and \
                     self.level[m][self.kistePosition[m][0] + 1][self.kistePosition[m][1]] in [0, 4]:
@@ -504,7 +531,7 @@ class Window(QWidget):
                 self.spielerPosition[m][0] += 1
 
         # Zug abspeichern
-        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+        # self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
 
 
     def kiNachRechts(self, m = 0):
@@ -512,7 +539,7 @@ class Window(QWidget):
             if self.level[m][self.spielerPosition[m][0]][self.spielerPosition[m][1] + 1] == 0 and \
                     [self.spielerPosition[m][0], self.spielerPosition[m][1] + 1] != self.kistePosition[m]:
                 # Positionen aendern
-                self.spielerPosition[0][1] += 1
+                self.spielerPosition[m][1] += 1
 
             elif [self.spielerPosition[m][0], self.spielerPosition[m][1] + 1] == self.kistePosition[m] and \
                     self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] + 1] in [0, 4]:
@@ -526,7 +553,7 @@ class Window(QWidget):
                 self.spielerPosition[m][1] += 1
 
         # Zug abspeichern
-        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+        # self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
         
 
 
@@ -535,7 +562,7 @@ class Window(QWidget):
             if self.level[m][self.spielerPosition[m][0]][self.spielerPosition[m][1] - 1] == 0 and \
                     [self.spielerPosition[m][0], self.spielerPosition[m][1] - 1] != self.kistePosition[m]:
                 # Positionen aendern
-                self.spielerPosition[0][1] -= 1
+                self.spielerPosition[m][1] -= 1
 
             elif [self.spielerPosition[m][0], self.spielerPosition[m][1] - 1] == self.kistePosition[m] and \
                     self.level[m][self.kistePosition[m][0]][self.kistePosition[m][1] - 1] in [0, 4]:
@@ -549,7 +576,7 @@ class Window(QWidget):
                 self.spielerPosition[m][1] -= 1
 
         # Zug abspeichern
-        self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
+        # self.gemachteZuege.append(copy.deepcopy((self.spielerPosition, self.kistePosition)))
 
 
     def kiSchritt(self):
