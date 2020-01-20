@@ -54,13 +54,14 @@ beispielLevel4 = [
 beispielLevel = [beispielLevel1, beispielLevel2, beispielLevel3, beispielLevel4]
 
 
+# einfaches Level zum testen
 
 einfachesLevel1 = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 1, 0, 1, 1, 1, 1],
-            [1, 0, 0, 2, 3, 0, 0, 0, 4],
-            [1, 0, 0, 0, 0, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 1, 1, 1, 1, 1, 4, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 3, 0, 1],
+            [1, 0, 0, 0, 0, 0, 2, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -106,7 +107,9 @@ einfachesLevel4 = [
 einfachesLevel = [einfachesLevel1, einfachesLevel2, einfachesLevel3, einfachesLevel4]
 
 
-kiTestLevel1 = [
+# kleines selbsterstelltes Level
+
+kleineLevel1 = [
             [1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
             [1, 0, 3, 0, 1],
@@ -115,7 +118,7 @@ kiTestLevel1 = [
             [1, 1, 1, 4, 1]
 ]
 
-kiTestLevel2 = [
+kleineLevel2 = [
             [1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
             [1, 0, 3, 0, 1],
@@ -124,7 +127,7 @@ kiTestLevel2 = [
             [1, 1, 1, 1, 1]
 ]
 
-kiTestLevel3 = [
+kleineLevel3 = [
             [1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
             [1, 0, 3, 1, 1],
@@ -133,7 +136,7 @@ kiTestLevel3 = [
             [1, 1, 1, 4, 1]
 ]
 
-kiTestLevel4 = [
+kleineLevel4 = [
             [1, 1, 1, 1, 1],
             [1, 0, 0, 0, 1],
             [1, 1, 3, 0, 1],
@@ -142,4 +145,4 @@ kiTestLevel4 = [
             [1, 1, 1, 4, 1]
 ]
 
-kiTestLevel = [kiTestLevel1, kiTestLevel2, kiTestLevel3, kiTestLevel4]
+kleineLevel = [kleineLevel1, kleineLevel2, kleineLevel3, kleineLevel4]
