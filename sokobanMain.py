@@ -14,23 +14,14 @@ Erklaerung:
     - 3 entspricht Kiste
 """
 
-class Knoten:
-
-    def __init__(self):
-        self.positionen = (None, None)
-        self.oben = None
-        self.rechts = None
-        self.unten = None
-        self.links = None
-
-
 
 class Window(QWidget):
 
     def __init__(self):
         super().__init__()
 
-        self.kiFeldnummer = ss.FELDNUMMER
+        self.kiFeldnummer1Feld = ss.einFeldKI
+        self.kiFeldnummer2Felder = ss.zweiFeldKI
 
         self.echtewW = ss.FENSTERBREITE
         self.echtewH = ss.FENSTERHOEHE
@@ -232,7 +223,7 @@ class Window(QWidget):
 
         # Q druecken um KI durchlaufen zu lassen
         if e.key() == Qt.Key_Q:
-            self.kiLoesung = self.kiSchritt(self.kiFeldnummer)
+            self.kiLoesung = self.kiSchritt(self.kiFeldnummer1Feld)
             #self.kiLoesung = self.kiSchritt(int(input("Das wievielte Feld soll berechnet werden? ")))
             self.kiBewegungVorlage = self.kiBewegungVorlageErstellen(self.kiLoesung)
             print(self.kiBewegungVorlage)
@@ -243,21 +234,42 @@ class Window(QWidget):
                 print("Bewegungsliste komplett durchgegangen")
             else:
                 if self.kiBewegungVorlage[self.kiZaehler] == "oben":
-                    self.nachObenBewegen(self.kiFeldnummer)
+                    self.nachObenBewegen(self.kiFeldnummer1Feld)
                 if self.kiBewegungVorlage[self.kiZaehler] == "rechts":
-                    self.nachRechtsBewegen(self.kiFeldnummer)
+                    self.nachRechtsBewegen(self.kiFeldnummer1Feld)
                 if self.kiBewegungVorlage[self.kiZaehler] == "unten":
-                    self.nachUntenBewegen(self.kiFeldnummer)
+                    self.nachUntenBewegen(self.kiFeldnummer1Feld)
                 if self.kiBewegungVorlage[self.kiZaehler] == "links":
-                    self.nachLinksBewegen(self.kiFeldnummer)
+                    self.nachLinksBewegen(self.kiFeldnummer1Feld)
                 self.kiZaehler += 1
                 self.update()
 
 
-    def mousePressEvent(self, QMouseEvent):
-        pos = QMouseEvent.pos()
-        print("               ", pos.x(), pos.y())     # zum ueberpruefen wo man klickt
+        # 1 druecken um KI auf 2 Feldern durchlaufen zu lassen
+        if e.key() == Qt.Key_1:
+            self.kiLoesung = self.kiSchritt2Felder(self.kiFeldnummer2Felder[0], self.kiFeldnummer2Felder[1])
+            self.kiBewegungVorlage = self.kiBewegungVorlageErstellen2Felder(self.kiLoesung)
+            print(self.kiBewegungVorlage)
 
+        # 2 druecken um bei der optimalen Loesung fuer 2 Felder einen Schritt weiterzugehen
+        if e.key() == Qt.Key_2:
+            if len(self.kiBewegungVorlage) <= self.kiZaehler:
+                print("Bewegungsliste komplett durchgegangen")
+            else:
+                if self.kiBewegungVorlage[self.kiZaehler] == "oben":
+                    self.nachObenBewegen(self.kiFeldnummer2Felder[0])
+                    self.nachObenBewegen(self.kiFeldnummer2Felder[1])
+                if self.kiBewegungVorlage[self.kiZaehler] == "rechts":
+                    self.nachRechtsBewegen(self.kiFeldnummer2Felder[0])
+                    self.nachRechtsBewegen(self.kiFeldnummer2Felder[1])
+                if self.kiBewegungVorlage[self.kiZaehler] == "unten":
+                    self.nachUntenBewegen(self.kiFeldnummer2Felder[0])
+                    self.nachUntenBewegen(self.kiFeldnummer2Felder[1])
+                if self.kiBewegungVorlage[self.kiZaehler] == "links":
+                    self.nachLinksBewegen(self.kiFeldnummer2Felder[0])
+                    self.nachLinksBewegen(self.kiFeldnummer2Felder[1])
+                self.kiZaehler += 1
+                self.update()
 
 
     """ Grundfunktionen """
@@ -472,22 +484,26 @@ class Window(QWidget):
     def oberesFeld(self, positionSpielerUndKisteO, m = 0):
         positionSpielerO = copy.deepcopy(positionSpielerUndKisteO[0])
         positionKisteO = copy.deepcopy(positionSpielerUndKisteO[1])
-        if not self.gewonnen[m]:
-            if self.level[m][positionSpielerO[0] - 1][positionSpielerO[1]] == 0 and \
-                    [positionSpielerO[0] - 1, positionSpielerO[1]] != positionKisteO:
-                # Positionen aendern
-                positionSpielerO[0] -= 1
 
-            elif [ positionSpielerO[0] - 1, positionSpielerO[1] ] == positionKisteO and \
-                    self.level[m][positionKisteO[0] - 1][positionKisteO[1]] in [0,4]:
+        # pruefen ob schon fertig
+        if positionKisteO == self.zielPosition[m]:
+            return positionSpielerO, positionKisteO
 
-                # pruefen ob Abschnitt fertig
-                if self.level[m][positionKisteO[0] - 1][positionKisteO[1]] == 4:
-                    self.gewonnen[m] = True
+        if self.level[m][positionSpielerO[0] - 1][positionSpielerO[1]] == 0 and \
+                [positionSpielerO[0] - 1, positionSpielerO[1]] != positionKisteO:
+            # Positionen aendern
+            positionSpielerO[0] -= 1
 
-                # Positionen aendern
-                positionKisteO[0] -= 1
-                positionSpielerO[0] -= 1
+        elif [ positionSpielerO[0] - 1, positionSpielerO[1] ] == positionKisteO and \
+                self.level[m][positionKisteO[0] - 1][positionKisteO[1]] in [0,4]:
+
+            # pruefen ob Abschnitt fertig
+            if self.level[m][positionKisteO[0] - 1][positionKisteO[1]] == 4:
+                self.gewonnen[m] = True
+
+            # Positionen aendern
+            positionKisteO[0] -= 1
+            positionSpielerO[0] -= 1
 
         return positionSpielerO, positionKisteO
 
@@ -496,22 +512,25 @@ class Window(QWidget):
         positionSpielerR = copy.deepcopy(positionSpielerUndKisteR[0])
         positionKisteR = copy.deepcopy(positionSpielerUndKisteR[1])
 
-        if not self.gewonnen[m]:
-            if self.level[m][positionSpielerR[0]][positionSpielerR[1] + 1] == 0 and \
-                    [positionSpielerR[0], positionSpielerR[1] + 1] != positionKisteR:
-                # Positionen aendern
-                positionSpielerR[1] += 1
+        # pruefen ob schon fertig
+        if positionKisteR == self.zielPosition[m]:
+            return positionSpielerR, positionKisteR
 
-            elif [positionSpielerR[0], positionSpielerR[1] + 1] == positionKisteR and \
-                    self.level[m][positionKisteR[0]][positionKisteR[1] + 1] in [0, 4]:
+        if self.level[m][positionSpielerR[0]][positionSpielerR[1] + 1] == 0 and \
+                [positionSpielerR[0], positionSpielerR[1] + 1] != positionKisteR:
+            # Positionen aendern
+            positionSpielerR[1] += 1
 
-                # pruefen ob Abschnitt fertig
-                if self.level[m][positionKisteR[0]][positionKisteR[1] + 1] == 4:
-                    self.gewonnen[m] = True
+        elif [positionSpielerR[0], positionSpielerR[1] + 1] == positionKisteR and \
+                self.level[m][positionKisteR[0]][positionKisteR[1] + 1] in [0, 4]:
 
-                # Positionen aendern
-                positionKisteR[1] += 1
-                positionSpielerR[1] += 1
+            # pruefen ob Abschnitt fertig
+            if self.level[m][positionKisteR[0]][positionKisteR[1] + 1] == 4:
+                self.gewonnen[m] = True
+
+            # Positionen aendern
+            positionKisteR[1] += 1
+            positionSpielerR[1] += 1
 
         return positionSpielerR, positionKisteR
 
@@ -519,22 +538,26 @@ class Window(QWidget):
     def unteresFeld(self, positionSpielerUndKisteU, m = 0):
         positionSpielerU = copy.deepcopy(positionSpielerUndKisteU[0])
         positionKisteU = copy.deepcopy(positionSpielerUndKisteU[1])
-        if not self.gewonnen[m]:
-            if self.level[m][positionSpielerU[0] + 1][positionSpielerU[1]] == 0 and \
-                    [positionSpielerU[0] + 1, positionSpielerU[1]] != positionKisteU:
-                # Positionen aendern
-                positionSpielerU[0] += 1
 
-            elif [positionSpielerU[0] + 1, positionSpielerU[1]] == positionKisteU and \
-                    self.level[m][positionKisteU[0] + 1][positionKisteU[1]] in [0, 4]:
+        # pruefen ob schon fertig
+        if positionKisteU == self.zielPosition[m]:
+            return positionSpielerU, positionKisteU
 
-                # pruefen ob Abschnitt fertig
-                if self.level[m][positionKisteU[0] + 1][positionKisteU[1]] == 4:
-                    self.gewonnen[m] = True
+        if self.level[m][positionSpielerU[0] + 1][positionSpielerU[1]] == 0 and \
+                [positionSpielerU[0] + 1, positionSpielerU[1]] != positionKisteU:
+            # Positionen aendern
+            positionSpielerU[0] += 1
 
-                # Positionen aendern
-                positionKisteU[0] += 1
-                positionSpielerU[0] += 1
+        elif [positionSpielerU[0] + 1, positionSpielerU[1]] == positionKisteU and \
+                self.level[m][positionKisteU[0] + 1][positionKisteU[1]] in [0, 4]:
+
+            # pruefen ob Abschnitt fertig
+            if self.level[m][positionKisteU[0] + 1][positionKisteU[1]] == 4:
+                self.gewonnen[m] = True
+
+            # Positionen aendern
+            positionKisteU[0] += 1
+            positionSpielerU[0] += 1
 
         return positionSpielerU, positionKisteU
 
@@ -543,22 +566,25 @@ class Window(QWidget):
         positionSpielerL = copy.deepcopy(positionSpielerUndKisteL[0])
         positionKisteL = copy.deepcopy(positionSpielerUndKisteL[1])
 
-        if not self.gewonnen[m]:
-            if self.level[m][positionSpielerL[0]][positionSpielerL[1] - 1] == 0 and \
-                    [positionSpielerL[0], positionSpielerL[1] - 1] != positionKisteL:
-                # Positionen aendern
-                positionSpielerL[1] -= 1
+        # pruefen ob schon fertig
+        if positionKisteL == self.zielPosition[m]:
+            return positionSpielerL, positionKisteL
 
-            elif [positionSpielerL[0], positionSpielerL[1] - 1] == positionKisteL and \
-                    self.level[m][positionKisteL[0]][positionKisteL[1] - 1] in [0, 4]:
+        if self.level[m][positionSpielerL[0]][positionSpielerL[1] - 1] == 0 and \
+                [positionSpielerL[0], positionSpielerL[1] - 1] != positionKisteL:
+            # Positionen aendern
+            positionSpielerL[1] -= 1
 
-                # pruefen ob Abschnitt fertig
-                if self.level[m][positionKisteL[0]][positionKisteL[1] - 1] == 4:
-                    self.gewonnen[m] = True
+        elif [positionSpielerL[0], positionSpielerL[1] - 1] == positionKisteL and \
+                self.level[m][positionKisteL[0]][positionKisteL[1] - 1] in [0, 4]:
 
-                # Positionen aendern
-                positionKisteL[1] -= 1
-                positionSpielerL[1] -= 1
+            # pruefen ob Abschnitt fertig
+            if self.level[m][positionKisteL[0]][positionKisteL[1] - 1] == 4:
+                self.gewonnen[m] = True
+
+            # Positionen aendern
+            positionKisteL[1] -= 1
+            positionSpielerL[1] -= 1
 
         return positionSpielerL, positionKisteL
 
@@ -651,6 +677,120 @@ class Window(QWidget):
                 bewegung.append("rechts")
 
         return bewegung
+
+
+    def kiBewegungVorlageErstellen2Felder(self, wegPlan):
+        bewegung = []
+        for spielerUndKisteIndex in range(len(wegPlan) - 1):
+            if wegPlan[spielerUndKisteIndex][0][0][0] > wegPlan[spielerUndKisteIndex + 1][0][0][0]:
+                bewegung.append("oben")
+            elif wegPlan[spielerUndKisteIndex][0][0][0] < wegPlan[spielerUndKisteIndex + 1][0][0][0]:
+                bewegung.append("unten")
+            elif wegPlan[spielerUndKisteIndex][0][0][1] > wegPlan[spielerUndKisteIndex + 1][0][0][1]:
+                bewegung.append("links")
+            elif wegPlan[spielerUndKisteIndex][0][0][1] < wegPlan[spielerUndKisteIndex + 1][0][0][1]:
+                bewegung.append("rechts")
+            else:
+                if wegPlan[spielerUndKisteIndex][1][0][0] > wegPlan[spielerUndKisteIndex + 1][1][0][0]:
+                    bewegung.append("oben")
+                elif wegPlan[spielerUndKisteIndex][1][0][0] < wegPlan[spielerUndKisteIndex + 1][1][0][0]:
+                    bewegung.append("unten")
+                elif wegPlan[spielerUndKisteIndex][1][0][1] > wegPlan[spielerUndKisteIndex + 1][1][0][1]:
+                    bewegung.append("links")
+                elif wegPlan[spielerUndKisteIndex][1][0][1] < wegPlan[spielerUndKisteIndex + 1][1][0][1]:
+                    bewegung.append("rechts")
+
+        return bewegung
+
+
+    def kiSchritt2Felder(self, m = 0, n = 1):
+
+        moeglicheWege = [ [ ( (self.spielerPosition[m], self.kistePosition[m]) , (self.spielerPosition[n], self.kistePosition[n]) ) ] ]
+        hilfsliste =[ ( (self.spielerPosition[m], self.kistePosition[m]) , (self.spielerPosition[n], self.kistePosition[n]) ) ]
+
+        abbruchzaehler = 0
+        while True:
+            abbruchzaehler += 1
+            if abbruchzaehler > 5000:
+                print("Abgebrochen")
+                return
+
+            moeglicheWegeKopie = copy.deepcopy(moeglicheWege)
+            moeglicheWege = []
+
+            for welcherWeg in range(len(moeglicheWegeKopie)):
+                momentanePosition = moeglicheWegeKopie[welcherWeg][-1]
+
+                """ nach oben """
+                naechstePositionO1 = self.oberesFeld(momentanePosition[0], m)
+                naechstePositionO2 = self.oberesFeld(momentanePosition[1], n)
+                if (naechstePositionO1, naechstePositionO2) not in hilfsliste:
+                    wegO = copy.deepcopy(moeglicheWegeKopie[welcherWeg])
+                    wegO.append((naechstePositionO1, naechstePositionO2))
+                    moeglicheWege.append(wegO)
+                    hilfsliste.append((naechstePositionO1, naechstePositionO2))
+
+                    #if self.gewonnen[m] and self.gewonnen[n]:
+                    if naechstePositionO1[1] == self.zielPosition[m] and naechstePositionO2[1] == self.zielPosition[n]:
+                        print("geschafft")
+                        print("Schnellster Weg :  ", wegO)
+                        self.gewonnen[m] = False
+                        self.gewonnen[n] = False
+                        return wegO
+
+
+                """ nach rechts """
+                naechstePositionR1 = self.rechtesFeld(momentanePosition[0], m)
+                naechstePositionR2 = self.rechtesFeld(momentanePosition[1], n)
+                if (naechstePositionR1, naechstePositionR2) not in hilfsliste:
+                    wegR = copy.deepcopy(moeglicheWegeKopie[welcherWeg])
+                    wegR.append((naechstePositionR1, naechstePositionR2))
+                    moeglicheWege.append(wegR)
+                    hilfsliste.append((naechstePositionR1, naechstePositionR2))
+
+                    #if self.gewonnen[m]:
+                    if naechstePositionR1[1] == self.zielPosition[m] and naechstePositionR2[1] == self.zielPosition[n]:
+                        print("geschafft")
+                        print("Schnellster Weg :  ", wegR)
+                        self.gewonnen[m] = False
+                        self.gewonnen[n] = False
+                        return wegR
+
+
+                """ nach unten """
+                naechstePositionU1 = self.unteresFeld(momentanePosition[0], m)
+                naechstePositionU2 = self.unteresFeld(momentanePosition[1], n)
+                if (naechstePositionU1, naechstePositionU2) not in hilfsliste:
+                    wegU = copy.deepcopy(moeglicheWegeKopie[welcherWeg])
+                    wegU.append((naechstePositionU1, naechstePositionU2))
+                    moeglicheWege.append(wegU)
+                    hilfsliste.append((naechstePositionU1, naechstePositionU2))
+
+                    #if self.gewonnen[m]:
+                    if naechstePositionU1[1] == self.zielPosition[m] and naechstePositionU2[1] == self.zielPosition[n]:
+                        print("geschafft")
+                        print("Schnellster Weg :  ", wegU)
+                        self.gewonnen[m] = False
+                        self.gewonnen[n] = False
+                        return wegU
+
+
+                """ nach links """
+                naechstePositionL1 = self.linkesFeld(momentanePosition[0], m)
+                naechstePositionL2 = self.linkesFeld(momentanePosition[1], n)
+                if (naechstePositionL1, naechstePositionL2) not in hilfsliste:
+                    wegL = copy.deepcopy(moeglicheWegeKopie[welcherWeg])
+                    wegL.append((naechstePositionL1, naechstePositionL2))
+                    moeglicheWege.append(wegL)
+                    hilfsliste.append((naechstePositionL1, naechstePositionL2))
+
+                    #if self.gewonnen[m]:
+                    if naechstePositionL1[1] == self.zielPosition[m] and naechstePositionL2[1] == self.zielPosition[n]:
+                        print("geschafft")
+                        print("Schnellster Weg :  ", wegL)
+                        self.gewonnen[m] = False
+                        self.gewonnen[n] = False
+                        return wegL
 
 
 
