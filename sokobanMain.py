@@ -28,7 +28,7 @@ class Window(QWidget):
         self.echtewH = ss.FENSTERHOEHE
         self.wW = ss.FENSTERBREITE // 2       # wW = windowWidth
         self.wH = ss.FENSTERHOEHE // 2        # wH = windowHeight
-        self.setGeometry(500, 30, self.echtewW, self.echtewH)
+        self.setGeometry(800, 30, self.echtewW, self.echtewH)
         self.setWindowTitle("Paralleles Sokoban")
         self.verschiebungNachUnten = self.wH // 8  # Gesamtverschiebung nach unten
         self.verschiebungNachRechts = self.wW // 8  # Gesamtverschiebung nach rechts
@@ -788,7 +788,7 @@ class Window(QWidget):
         abbruchzaehler = 0
         while True:
             abbruchzaehler += 1
-            if abbruchzaehler > 5000:
+            if abbruchzaehler > 10000:
                 print("Abgebrochen")
                 return
 
