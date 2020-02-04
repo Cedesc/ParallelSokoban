@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import Qt
 import copy
 import sokobanSettings as ss
+import sokobanLevelBib as slb
 
 
 """ 
@@ -174,6 +175,20 @@ class Window(QWidget):
 
     def fn(self, e):
 
+        # H druecken um Steuerung anzeigen zu lassen
+        if e.key() == Qt.Key_H:
+            print(""" Steuerung :
+            Escape :  Fenster schliessen 
+            R :  Level resetten
+            Z :  einen Schritt zurueckgehen
+            Q :  1-Feld-KI Berechnung
+            W :  1-Feld-KI Ausfuehrung
+            1 :  2-Feld-KI Berechnung
+            2 :  2-Feld-KI Ausfuehrung
+            +/- :  Feld aendern, auf das die 1-Feld-KI abzielt
+            P :  zufaelliges Feld berichtigen - 1 Schritt
+            O :  zufaelliges Feld berichtigen - komplett""")
+
         # esc druecken um Level zu schliessen
         if e.key() == Qt.Key_Escape:
             self.close()
@@ -272,6 +287,54 @@ class Window(QWidget):
                 self.update()
 
 
+        # + druecken um Feld zu erhoehen, auf das die 1-Feld-KI abzielt
+        if e.key() == Qt.Key_Plus:
+            self.kiFeldnummer1Feld = (self.kiFeldnummer1Feld + 1) % 4
+            print("KI-Zeiger nun auf :  ", self.kiFeldnummer1Feld)
+            self.kiLoesung = None
+            self.kiBewegungVorlage = None
+            self.kiZaehler = 0
+
+        # - druecken um Feld zu verringern, auf das die 1-Feld-KI abzielt
+        if e.key() == Qt.Key_Minus:
+            self.kiFeldnummer1Feld = (self.kiFeldnummer1Feld - 1) % 4
+            print("KI-Zeiger nun auf :  ", self.kiFeldnummer1Feld)
+            self.kiLoesung = None
+            self.kiBewegungVorlage = None
+            self.kiZaehler = 0
+
+
+        # P druecken um zufaelliges Level zu erstellen/ueberpruefen
+        if e.key() == Qt.Key_P:
+            fertig = True
+            for m in range(4):
+                if not self.kiSchritt(m):
+                    slb.erstelltesLevel[m] = slb.zufaelligesLevelErstellen(slb.Z_REIHEN, slb.Z_SPALTEN,
+                                                                           slb.Z_WK_SCHWARZE_FELDER)
+                    self.levelReset()
+                    fertig = False
+            if fertig:
+                print("Zufaelliges Level ist fertig")
+            self.update()
+
+        if e.key() == Qt.Key_O:
+            fertig = False
+            felderFertig = [False, False, False, False]
+            while not fertig:
+                fertig = True
+                for m in range(4):
+                    if not felderFertig[m]:
+                        if not self.kiSchritt(m):
+                            slb.erstelltesLevel[m] = slb.zufaelligesLevelErstellen(slb.Z_REIHEN, slb.Z_SPALTEN,
+                                                                                   slb.Z_WK_SCHWARZE_FELDER)
+                            self.levelReset()
+                            fertig = False
+                        else:
+                            felderFertig[m] = True
+
+            print("Zufaelliges Level ist fertig")
+            self.update()
+
     """ Grundfunktionen """
 
     def koordinatenBestimmen(self):
@@ -348,6 +411,13 @@ class Window(QWidget):
         self.kistePosition = self.positionenBestimmenKiste()
         self.gewonnen = [False, False, False, False]
         self.gemachteZuege = [copy.deepcopy((self.spielerPosition, self.kistePosition))]
+        self.kiZaehler = 0
+        self.kiLoesung = None
+        self.kiBewegungVorlage = None
+        # 2 und 3 entfernen aus Level
+        for n in range(4):
+            self.level[n][self.spielerPosition[n][0]][self.spielerPosition[n][1]] = 0
+            self.level[n][self.kistePosition[n][0]][self.kistePosition[n][1]] = 0
 
 
     def pruefenObGewonnen(self):
@@ -358,6 +428,13 @@ class Window(QWidget):
 
         print("Glueckwunsch du hast gewonnen!")
         return True
+
+
+    def aufZufaelligesLevelWechseln(self, m):
+        if not self.kiSchritt(m):
+            slb.erstelltesLevel[m] = slb.zufaelligesLevelErstellen(slb.Z_REIHEN, slb.Z_SPALTEN, slb.Z_WK_SCHWARZE_FELDER)
+            self.levelReset()
+
 
 
     """ Bewegung """
@@ -597,9 +674,9 @@ class Window(QWidget):
         abbruchzaehler = 0
         while True:
             abbruchzaehler += 1
-            if abbruchzaehler > 500:
-                print("Abgebrochen")
-                return
+            if abbruchzaehler > 200:
+                print("Nicht loesbar")
+                return False
 
             moeglicheWegeKopie = copy.deepcopy(moeglicheWege)
             moeglicheWege = []
@@ -617,7 +694,7 @@ class Window(QWidget):
 
                     if self.gewonnen[m]:
                         print("geschafft")
-                        print("Schnellster Weg :  ", wegO)
+                        #print("Schnellster Weg :  ", wegO)
                         self.gewonnen[m] = False
                         return wegO
 

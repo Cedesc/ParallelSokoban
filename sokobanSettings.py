@@ -1,16 +1,14 @@
 import sokobanLevelBib
 
 """ Spiel-Settings """
-FENSTERBREITE = 1000
-FENSTERHOEHE = 800
-ANZAHLREIHEN = 15
-ANZAHLSPALTEN = 15
+FENSTERBREITE = 1300
+FENSTERHOEHE = 1000
 SCHWIERIGKEIT = -1000
 einFeldKI = 0
-zweiFeldKI = (0, 2)
+zweiFeldKI = (3, 2)
 
 
-VORGEFERTIGTESLEVEL = sokobanLevelBib.anderesLevel
+VORGEFERTIGTESLEVEL = sokobanLevelBib.beispielLevel
 
 LEVEL = VORGEFERTIGTESLEVEL
 
