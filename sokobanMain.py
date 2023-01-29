@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 import copy
 import sokobanSettings as ss
 import sokobanLevelBib as slb
@@ -56,8 +56,16 @@ class Window(QWidget):
         self.kiZaehler = 0
 
         self.keyPressEvent = self.fn
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.gravitation)
+        self.timer.start(2000)
+
         self.show()
 
+    def gravitation(self):
+        # self.nachUntenBewegen()
+        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
